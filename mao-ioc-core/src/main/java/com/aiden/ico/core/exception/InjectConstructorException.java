@@ -5,7 +5,7 @@ package com.aiden.ico.core.exception;
  */
 public class InjectConstructorException extends RuntimeException {
 
-  public InjectConstructorException(Class<?> target, Exception e) {
-    super("inject " + target + " failed", e);
+  public InjectConstructorException(Class<?> instanceClass, Exception e) {
+    super("inject " + instanceClass + " failed", e);
   }
 }

@@ -1,7 +1,7 @@
 package com.aiden.ioc.example.service.impl;
 
-import com.aiden.ico.core.annotation.Inject;
-import com.aiden.ico.core.annotation.Instance;
+import com.aiden.ico.core.annotation.InjectAnnotation;
+import com.aiden.ico.core.annotation.InstanceAnnotation;
 import com.aiden.ioc.example.dao.UserDao;
 import com.aiden.ioc.example.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +10,10 @@ import lombok.extern.slf4j.Slf4j;
  * @author yemingfeng
  */
 @Slf4j
-@Instance
+@InstanceAnnotation
 public class UserServiceImpl implements UserService {
 
-  @Inject
+  @InjectAnnotation
   private UserDao userDao;
 
   @Override

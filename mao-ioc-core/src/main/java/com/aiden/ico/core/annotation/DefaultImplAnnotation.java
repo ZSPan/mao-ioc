@@ -10,10 +10,10 @@ import java.lang.annotation.Target;
  * @author yemingfeng
  */
 @Documented
-@Target(ElementType.METHOD)
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Provider {
+public @interface DefaultImplAnnotation {
 
-  String name() default "mao-default-name";
+  Class<?> defaultImpl() default DefaultImplAnnotation.class;
 
 }

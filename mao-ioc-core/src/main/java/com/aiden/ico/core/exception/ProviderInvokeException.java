@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 public class ProviderInvokeException extends RuntimeException {
 
   public ProviderInvokeException(Method method, Exception e) {
-    super(String.format("invoke %s error", method), e);
+    super("invoke " + method + " error", e);
   }
-
 }

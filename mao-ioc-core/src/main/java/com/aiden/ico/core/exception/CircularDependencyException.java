@@ -5,7 +5,7 @@ package com.aiden.ico.core.exception;
  */
 public class CircularDependencyException extends RuntimeException {
 
-  public CircularDependencyException(Class<?> target, Class<?> dependencyClass) {
-    super(dependencyClass + " " + target + " circularDependency");
+  public CircularDependencyException(Class<?> instanceClass, Class<?> dependencyClass) {
+    super(dependencyClass + " " + instanceClass + " circularDependency");
   }
 }

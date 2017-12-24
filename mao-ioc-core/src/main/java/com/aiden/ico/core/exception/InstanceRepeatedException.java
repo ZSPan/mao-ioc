@@ -5,7 +5,7 @@ package com.aiden.ico.core.exception;
  */
 public class InstanceRepeatedException extends RuntimeException {
 
-  public InstanceRepeatedException(Class<?> target) {
-    super(target + " have more than one instances");
+  public InstanceRepeatedException(Class<?> instanceClass) {
+    super(instanceClass + " have more than one instances");
   }
 }

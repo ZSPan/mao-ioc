@@ -10,9 +10,9 @@ import java.lang.annotation.Target;
  * @author yemingfeng
  */
 @Documented
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Inject {
+public @interface InstanceAnnotation {
 
   String name() default "mao-default-name";
 

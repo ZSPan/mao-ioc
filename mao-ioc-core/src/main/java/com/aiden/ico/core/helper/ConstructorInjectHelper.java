@@ -1,7 +1,8 @@
 package com.aiden.ico.core.helper;
 
-import com.aiden.ico.core.annotation.Instance;
-import com.aiden.ico.core.exception.ClassNotContainInstanceAnnotationException;
+import com.aiden.ico.core.annotation.DefaultImplAnnotation;
+import com.aiden.ico.core.annotation.InstanceAnnotation;
+import com.aiden.ico.core.annotation.NameAnnotation;
 import com.aiden.ico.core.exception.InjectConstructorException;
 import com.aiden.ico.core.injector.MaoInjector;
 import java.lang.reflect.Constructor;
@@ -18,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConstructorInjectHelper extends AbsInjectHelper {
 
-  private Set<Class<?>> instanceClass;
+  private Set<Class<?>> instanceClasses;
 
   public ConstructorInjectHelper(MaoInjector injector) {
     super(injector);
@@ -26,45 +27,45 @@ public class ConstructorInjectHelper extends AbsInjectHelper {
 
   @Override
   protected void doInit() {
-    this.instanceClass = injector.getInstanceClasses();
+    this.instanceClasses = injector.getInstanceClasses();
   }
 
   @Override
   protected void doWork() {
     LogHelper.logSegmentingLine();
     log.info("start inject constructor");
-    for (Class<?> target : instanceClass) {
-      injectConstructor(ClassHelper.getConstructor(target));
+    for (Class<?> instanceClass : instanceClasses) {
+      injectConstructor(injector.getConstructor(instanceClass));
     }
     log.info("end inject constructor");
   }
 
-  private void injectConstructor(Constructor<?> targetConstructor) {
-    Class<?> target = targetConstructor.getDeclaringClass();
-    Instance instance = target.getAnnotation(Instance.class);
-    if (instance == null) {
-      throw new ClassNotContainInstanceAnnotationException(target);
-    }
-
-    List<Object> params = getParamObjects(targetConstructor.getParameters());
-    Object targetObject;
+  private void injectConstructor(Constructor<?> instanceConstructor) {
+    Class<?> instanceClass = instanceConstructor.getDeclaringClass();
+    InstanceAnnotation instanceAnnotation =
+        instanceClass.getDeclaredAnnotation(InstanceAnnotation.class);
+    List<Object> params = getParamObjects(instanceConstructor.getParameters());
     try {
-      targetObject = targetConstructor.newInstance(params.toArray(new Object[0]));
-      injector.putInstance(target, targetObject, instance.name());
-      log.info("inject {} to {}", params, targetObject);
+      Object instance = instanceConstructor.newInstance(params.toArray(new Object[0]));
+      injector.putInstance(instanceClass, instance, instanceAnnotation.name());
+      log.info("inject {} to {}", params, instance);
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-      throw new InjectConstructorException(target, e);
+      throw new InjectConstructorException(instanceClass, e);
     }
   }
 
   private List<Object> getParamObjects(Parameter[] parameters) {
     List<Object> instances = new ArrayList<>();
     for (Parameter parameter : parameters) {
-      Class<?> parameterType = parameter.getType();
-      Object object = injector.getInstanceWithoutException(parameterType);
+      NameAnnotation nameAnnotation = parameter.getAnnotation(NameAnnotation.class);
+      DefaultImplAnnotation defaultImplAnnotation = parameter
+          .getAnnotation(DefaultImplAnnotation.class);
+      Class<?> instanceClass = parameter.getType();
+      Object object = injector.getInstanceWithoutException(nameAnnotation,
+          defaultImplAnnotation, instanceClass);
       if (object == null) {
-        injectConstructor(ClassHelper.getConstructor(parameterType));
-        object = injector.getInstanceWithoutException(parameterType);
+        injectConstructor(injector.getConstructor(instanceClass));
+        object = injector.getInstance(nameAnnotation, defaultImplAnnotation, instanceClass);
       }
       instances.add(object);
     }

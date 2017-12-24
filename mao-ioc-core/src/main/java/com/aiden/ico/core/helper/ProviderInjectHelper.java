@@ -1,10 +1,14 @@
 package com.aiden.ico.core.helper;
 
-import com.aiden.ico.core.annotation.Provider;
+import com.aiden.ico.core.annotation.DefaultImplAnnotation;
+import com.aiden.ico.core.annotation.NameAnnotation;
+import com.aiden.ico.core.annotation.ProviderAnnotation;
 import com.aiden.ico.core.exception.ProviderInvokeException;
 import com.aiden.ico.core.injector.MaoInjector;
+import com.google.common.collect.Sets;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,23 +35,36 @@ public class ProviderInjectHelper extends AbsInjectHelper {
   protected void doWork() {
     LogHelper.logSegmentingLine();
     log.info("start inject provider");
-    for (Class<?> targetClass : instanceClasses) {
-      Set<Method> providerMethods = ClassHelper.getProviderMethods(targetClass);
+    for (Class<?> instanceClass : instanceClasses) {
+      Set<Method> providerMethods = getProviderMethods(instanceClass);
       for (Method providerMethod : providerMethods) {
-        List<Class<?>> parameterClasses = ClassHelper.getParameters(providerMethod);
-        List<Object> parameters = parameterClasses.stream()
-            .map(parameterClass -> injector.getInstance(parameterClass))
+        List<Object> parameters = Arrays.stream(providerMethod.getParameters())
+            .map(parameter -> {
+              NameAnnotation name = parameter.getAnnotation(NameAnnotation.class);
+              DefaultImplAnnotation defaultImpl = parameter
+                  .getAnnotation(DefaultImplAnnotation.class);
+              return injector.getInstanceWithoutException(name, defaultImpl, parameter.getType());
+            })
             .collect(Collectors.toList());
         try {
-          Provider provider = providerMethod.getAnnotation(Provider.class);
-          Object targetObject = providerMethod.invoke(injector.getInstance(targetClass),
+          ProviderAnnotation providerAnnotation =
+              providerMethod.getAnnotation(ProviderAnnotation.class);
+          Object instance = providerMethod.invoke(injector.getInstance(instanceClass),
               parameters.toArray(new Object[parameters.size()]));
-          injector.putInstance(targetObject.getClass(), targetObject, provider.name());
+          injector.putInstance(instance.getClass(), instance, providerAnnotation.name());
         } catch (IllegalAccessException | InvocationTargetException e) {
           throw new ProviderInvokeException(providerMethod, e);
         }
       }
     }
     log.info("end inject provider");
+  }
+
+  private Set<Method> getProviderMethods(Class<?> instanceClass) {
+    Method[] providerMethods = instanceClass.getDeclaredMethods();
+    return Sets.newHashSet(providerMethods)
+        .stream()
+        .filter(method -> method.getAnnotation(ProviderAnnotation.class) != null)
+        .collect(Collectors.toSet());
   }
 }

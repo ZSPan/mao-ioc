@@ -5,7 +5,7 @@ package com.aiden.ico.core.exception;
  */
 public class InstanceNotFoundException extends RuntimeException {
 
-  public InstanceNotFoundException(Class<?> target) {
-    super(target + " not found");
+  public InstanceNotFoundException(Class<?> instanceClass) {
+    super(instanceClass + " not found");
   }
 }

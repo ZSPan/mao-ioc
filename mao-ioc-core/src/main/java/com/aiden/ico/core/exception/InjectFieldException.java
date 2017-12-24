@@ -5,7 +5,7 @@ package com.aiden.ico.core.exception;
  */
 public class InjectFieldException extends RuntimeException {
 
-  public InjectFieldException(Class<?> target, Class<?> fieldClass, Exception e) {
-    super("inject " + fieldClass + " to " + target + " failed", e);
+  public InjectFieldException(Class<?> instanceClass, Class<?> fieldClass, Exception e) {
+    super("inject " + fieldClass + " to " + instanceClass + " failed", e);
   }
 }
