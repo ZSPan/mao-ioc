@@ -173,6 +173,20 @@ public class MaoInjector {
     return reflections.getSubTypesOf((Class<T>) instanceClass);
   }
 
+  public MaoInjector merge(MaoInjector injector) {
+    injector.getInstanceItemMap()
+        .forEach((instanceClass, instanceItems) -> instanceItems
+            .forEach(instanceItem -> {
+              InstanceAnnotation instanceAnnotation =
+                  instanceItem.getRealClass().getAnnotation(InstanceAnnotation.class);
+              putInstance(instanceItem.getRealClass(), instanceItem.getInstance(),
+                  instanceAnnotation.name()
+              );
+            }));
+    instanceClasses.addAll(injector.getInstanceClasses());
+    return this;
+  }
+
   @Data
   @AllArgsConstructor
   private class InstanceItem {
