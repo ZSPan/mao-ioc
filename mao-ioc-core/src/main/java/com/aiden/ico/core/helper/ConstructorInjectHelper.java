@@ -3,6 +3,7 @@ package com.aiden.ico.core.helper;
 import com.aiden.ico.core.annotation.DefaultImplAnnotation;
 import com.aiden.ico.core.annotation.InstanceAnnotation;
 import com.aiden.ico.core.annotation.NameAnnotation;
+import com.aiden.ico.core.exception.ClassNotContainInstanceAnnotationException;
 import com.aiden.ico.core.exception.InjectConstructorException;
 import com.aiden.ico.core.injector.MaoInjector;
 import java.lang.reflect.Constructor;
@@ -64,11 +65,30 @@ public class ConstructorInjectHelper extends AbsInjectHelper {
       Object object = injector.getInstanceWithoutException(nameAnnotation,
           defaultImplAnnotation, instanceClass);
       if (object == null) {
-        injectConstructor(injector.getConstructor(instanceClass));
+        initInstance(instanceClass);
         object = injector.getInstance(nameAnnotation, defaultImplAnnotation, instanceClass);
       }
       instances.add(object);
     }
     return instances;
+  }
+
+  private void initInstance(Class<?> instanceClass) {
+    List<Class<?>> subClasses = new ArrayList<>();
+    subClasses.add(instanceClass);
+    subClasses.addAll(injector.getSubClasses(instanceClass));
+
+    Class<?> defaultSubClass = null;
+    for (Class<?> subClass : subClasses) {
+      if (instanceClass.getAnnotation(InstanceAnnotation.class) != null &&
+          !instanceClass.isInterface() &&
+          !instanceClass.isAnnotation()) {
+        defaultSubClass = subClass;
+      }
+    }
+    if (defaultSubClass == null) {
+      throw new ClassNotContainInstanceAnnotationException(instanceClass);
+    }
+    injectConstructor(injector.getConstructor(instanceClass));
   }
 }

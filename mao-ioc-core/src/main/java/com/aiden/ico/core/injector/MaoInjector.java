@@ -32,6 +32,7 @@ public class MaoInjector {
 
   private Map<Class<?>, Set<InstanceItem>> instanceItemMap;
   private Set<Class<?>> instanceClasses;
+  private Reflections reflections;
 
   private CircularDependencyHelper circularDependencyHelper;
   private ConstructorInjectHelper constructorInjectHelper;
@@ -40,7 +41,7 @@ public class MaoInjector {
 
   public MaoInjector(Class<?> baseClass) {
     this.instanceItemMap = new HashMap<>();
-    Reflections reflections = new Reflections(baseClass.getPackage().getName());
+    reflections = new Reflections(baseClass.getPackage().getName());
     instanceClasses = reflections.getTypesAnnotatedWith(InstanceAnnotation.class);
 
     LogHelper.logSegmentingLine();
@@ -167,6 +168,11 @@ public class MaoInjector {
     return defaultConstructor;
   }
 
+  @SuppressWarnings("unchecked")
+  public <T> Set<Class<? extends T>> getSubClasses(Class<?> instanceClass) {
+    return reflections.getSubTypesOf((Class<T>) instanceClass);
+  }
+
   @Data
   @AllArgsConstructor
   private class InstanceItem {
@@ -178,6 +184,11 @@ public class MaoInjector {
     @Override
     public boolean equals(Object o) {
       return o instanceof InstanceItem && ((InstanceItem) o).getName().equals(name);
+    }
+
+    @Override
+    public int hashCode() {
+      return name.hashCode();
     }
 
     @Override
