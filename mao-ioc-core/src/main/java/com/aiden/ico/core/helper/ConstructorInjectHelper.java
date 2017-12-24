@@ -1,5 +1,7 @@
 package com.aiden.ico.core.helper;
 
+import com.aiden.ico.core.annotation.Instance;
+import com.aiden.ico.core.exception.ClassNotContainInstanceAnnotationException;
 import com.aiden.ico.core.exception.InjectConstructorException;
 import com.aiden.ico.core.injector.MaoInjector;
 import java.lang.reflect.Constructor;
@@ -39,15 +41,20 @@ public class ConstructorInjectHelper extends AbsInjectHelper {
 
   private void injectConstructor(Constructor<?> targetConstructor) {
     Class<?> target = targetConstructor.getDeclaringClass();
+    Instance instance = target.getAnnotation(Instance.class);
+    if (instance == null) {
+      throw new ClassNotContainInstanceAnnotationException(target);
+    }
+
     List<Object> params = getParamObjects(targetConstructor.getParameters());
     Object targetObject;
     try {
       targetObject = targetConstructor.newInstance(params.toArray(new Object[0]));
+      injector.putInstance(target, targetObject, instance.name());
       log.info("inject {} to {}", params, targetObject);
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
       throw new InjectConstructorException(target, e);
     }
-    injector.putInstance(target, targetObject);
   }
 
   private List<Object> getParamObjects(Parameter[] parameters) {

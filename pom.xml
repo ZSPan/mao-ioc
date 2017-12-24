@@ -7,7 +7,6 @@
   <artifactId>mao-ioc</artifactId>
   <version>1.0-SNAPSHOT</version>
   <modules>
-    <module>mao-ioc-annotation</module>
     <module>mao-ioc-core</module>
     <module>mao-ioc-example</module>
   </modules>
@@ -30,12 +29,6 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>javax</groupId>
-        <artifactId>javaee-api</artifactId>
-        <version>${javaee.version}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>1.7.5</version>
@@ -47,22 +40,11 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>3.5</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
         <version>0.9.11</version>
       </dependency>
 
-      <dependency>
-        <groupId>com.aiden.ioc</groupId>
-        <artifactId>mao-ioc-annotation</artifactId>
-        <version>1.0-SNAPSHOT</version>
-      </dependency>
       <dependency>
         <groupId>com.aiden.ioc</groupId>
         <artifactId>mao-ioc-core</artifactId>
@@ -88,6 +70,5 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <javaee.version>7.0</javaee.version>
   </properties>
 </project>

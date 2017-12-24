@@ -34,8 +34,8 @@ public class CircularDependencyHelper extends AbsInjectHelper {
     LogHelper.logSegmentingLine();
     log.info("start analyze circular dependencies");
     for (Class<?> target : instanceClass) {
-      Set<Class<?>> dependencyClasses = new HashSet<>();
-      dependencies.put(target, dependencyClasses);
+      Set<Class<?>> dependencyClasses = dependencies.computeIfAbsent(
+          target, _target -> new HashSet<>());
       appendDependencies(target, dependencyClasses);
       log.info("{} dependencies {}", target, dependencies.get(target));
     }
@@ -55,8 +55,9 @@ public class CircularDependencyHelper extends AbsInjectHelper {
   }
 
   private void checkCircularDependency(Class<?> target, Class<?> dependencyClass) {
-    Set<Class<?>> dependencyClasses = dependencies.get(dependencyClass);
-    if (dependencyClasses != null && dependencyClasses.contains(target)) {
+    Set<Class<?>> dependencyClasses = dependencies.computeIfAbsent(
+        dependencyClass, _dependencyClass -> new HashSet<>());
+    if (dependencyClasses.contains(target)) {
       throw new CircularDependencyException(dependencyClass, target);
     }
   }

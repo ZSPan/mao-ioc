@@ -1,6 +1,7 @@
 package com.aiden.ico.core.helper;
 
-import com.aiden.ico.anno.Provider;
+import com.aiden.ico.core.annotation.Inject;
+import com.aiden.ico.core.annotation.Provider;
 import com.google.common.collect.Sets;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -14,7 +15,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 
 /**
  * @author yemingfeng

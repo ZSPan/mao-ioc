@@ -1,4 +1,4 @@
-package com.aiden.ico.anno;
+package com.aiden.ico.core.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -10,8 +10,10 @@ import java.lang.annotation.Target;
  * @author yemingfeng
  */
 @Documented
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Instance {
+public @interface Provider {
+
+  String name() default "mao-default-name";
 
 }

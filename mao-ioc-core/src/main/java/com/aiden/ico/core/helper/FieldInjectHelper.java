@@ -1,11 +1,11 @@
 package com.aiden.ico.core.helper;
 
+import com.aiden.ico.core.annotation.Inject;
 import com.aiden.ico.core.exception.InjectFieldException;
 import com.aiden.ico.core.injector.MaoInjector;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -31,15 +31,14 @@ public class FieldInjectHelper extends AbsInjectHelper {
     log.info("start inject field");
     for (Class<?> target : instanceClass) {
       List<Field> fields = ClassHelper.getField(target);
-      for (Field field : fields) {
-        injectField(field);
-      }
+      fields.forEach(this::injectField);
     }
     log.info("end inject field");
   }
 
   private void injectField(Field field) {
-    if (field.getAnnotation(Inject.class) == null) {
+    Inject inject = field.getAnnotation(Inject.class);
+    if (inject == null) {
       return;
     }
     Class<?> target = field.getDeclaringClass();
@@ -47,7 +46,7 @@ public class FieldInjectHelper extends AbsInjectHelper {
     field.setAccessible(true);
     Class<?> fieldClass = field.getType();
     try {
-      field.set(targetObject, injector.getInstance(fieldClass));
+      field.set(targetObject, injector.getInstance(fieldClass, inject.name()));
       log.info("inject {} to {}", fieldClass, target);
     } catch (IllegalAccessException e) {
       throw new InjectFieldException(target, fieldClass, e);

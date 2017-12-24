@@ -1,6 +1,6 @@
 package com.aiden.ioc.example.dao.impl;
 
-import com.aiden.ico.anno.Instance;
+import com.aiden.ico.core.annotation.Instance;
 import com.aiden.ioc.example.dao.UserDao;
 import lombok.extern.slf4j.Slf4j;
 

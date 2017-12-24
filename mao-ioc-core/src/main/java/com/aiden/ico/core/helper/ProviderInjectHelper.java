@@ -1,5 +1,6 @@
 package com.aiden.ico.core.helper;
 
+import com.aiden.ico.core.annotation.Provider;
 import com.aiden.ico.core.exception.ProviderInvokeException;
 import com.aiden.ico.core.injector.MaoInjector;
 import java.lang.reflect.InvocationTargetException;
@@ -28,6 +29,7 @@ public class ProviderInjectHelper extends AbsInjectHelper {
 
   @Override
   protected void doWork() {
+    LogHelper.logSegmentingLine();
     log.info("start inject provider");
     for (Class<?> targetClass : instanceClasses) {
       Set<Method> providerMethods = ClassHelper.getProviderMethods(targetClass);
@@ -37,9 +39,10 @@ public class ProviderInjectHelper extends AbsInjectHelper {
             .map(parameterClass -> injector.getInstance(parameterClass))
             .collect(Collectors.toList());
         try {
+          Provider provider = providerMethod.getAnnotation(Provider.class);
           Object targetObject = providerMethod.invoke(injector.getInstance(targetClass),
               parameters.toArray(new Object[parameters.size()]));
-          injector.putInstance(targetObject.getClass(), targetObject);
+          injector.putInstance(targetObject.getClass(), targetObject, provider.name());
         } catch (IllegalAccessException | InvocationTargetException e) {
           throw new ProviderInvokeException(providerMethod, e);
         }
