@@ -14,5 +14,6 @@ public class MainClass {
     MaoInjector injector = new MaoInjector(MainClass.class);
     UserService userService = injector.getInstance(UserService.class);
     userService.save();
+    userService.delete();
   }
 }
