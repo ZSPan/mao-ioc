@@ -36,7 +36,7 @@ public class ProviderInjectHelper extends AbsInjectHelper {
     LogHelper.logSegmentingLine();
     log.info("start inject provider");
     for (Class<?> instanceClass : instanceClasses) {
-      Set<Method> providerMethods = getProviderMethods(instanceClass);
+      List<Method> providerMethods = getProviderMethods(instanceClass);
       for (Method providerMethod : providerMethods) {
         List<Object> parameters = Arrays.stream(providerMethod.getParameters())
             .map(parameter -> {
@@ -51,7 +51,9 @@ public class ProviderInjectHelper extends AbsInjectHelper {
               providerMethod.getAnnotation(ProviderAnnotation.class);
           Object instance = providerMethod.invoke(injector.getInstance(instanceClass),
               parameters.toArray(new Object[parameters.size()]));
-          injector.putInstance(instance.getClass(), instance, providerAnnotation.name());
+          if (instance != null) {
+            injector.putInstance(instance.getClass(), instance, providerAnnotation.name());
+          }
         } catch (IllegalAccessException | InvocationTargetException e) {
           throw new ProviderInvokeException(providerMethod, e);
         }
@@ -60,11 +62,11 @@ public class ProviderInjectHelper extends AbsInjectHelper {
     log.info("end inject provider");
   }
 
-  private Set<Method> getProviderMethods(Class<?> instanceClass) {
+  private List<Method> getProviderMethods(Class<?> instanceClass) {
     Method[] providerMethods = instanceClass.getDeclaredMethods();
     return Sets.newHashSet(providerMethods)
         .stream()
         .filter(method -> method.getAnnotation(ProviderAnnotation.class) != null)
-        .collect(Collectors.toSet());
+        .collect(Collectors.toList());
   }
 }
