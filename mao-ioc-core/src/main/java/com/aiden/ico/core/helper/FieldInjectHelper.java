@@ -8,7 +8,6 @@ import com.aiden.ico.core.injector.MaoInjector;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -17,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FieldInjectHelper extends AbsInjectHelper {
 
-  private Set<Class<?>> instanceClasses;
+  private List<Class<?>> instanceClasses;
 
   public FieldInjectHelper(MaoInjector injector) {
     super(injector);

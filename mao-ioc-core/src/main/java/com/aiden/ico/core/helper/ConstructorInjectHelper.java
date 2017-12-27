@@ -11,7 +11,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -20,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConstructorInjectHelper extends AbsInjectHelper {
 
-  private Set<Class<?>> instanceClasses;
+  private List<Class<?>> instanceClasses;
 
   public ConstructorInjectHelper(MaoInjector injector) {
     super(injector);
