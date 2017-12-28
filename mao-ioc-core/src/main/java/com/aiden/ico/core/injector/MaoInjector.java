@@ -12,8 +12,10 @@ import com.aiden.ico.core.helper.FieldInjectHelper;
 import com.aiden.ico.core.helper.LogHelper;
 import com.aiden.ico.core.helper.ProviderInjectHelper;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -31,7 +33,7 @@ import org.reflections.Reflections;
 public class MaoInjector {
 
   private Map<Class<?>, Set<InstanceItem>> instanceItemMap;
-  private Set<Class<?>> instanceClasses;
+  private List<Class<?>> instanceClasses;
   private Reflections reflections;
 
   private CircularDependencyHelper circularDependencyHelper;
@@ -42,7 +44,7 @@ public class MaoInjector {
   public MaoInjector(Class<?> baseClass) {
     this.instanceItemMap = new HashMap<>();
     reflections = new Reflections(baseClass.getPackage().getName());
-    instanceClasses = reflections.getTypesAnnotatedWith(InstanceAnnotation.class);
+    instanceClasses = new ArrayList<>(reflections.getTypesAnnotatedWith(InstanceAnnotation.class));
 
     LogHelper.logSegmentingLine();
 
@@ -116,7 +118,7 @@ public class MaoInjector {
   }
 
   public <T> void putInstance(Class<T> instanceClass, Object instance, String name) {
-    Set<Class<?>> superClasses = getSuperClasses(instanceClass);
+    List<Class<?>> superClasses = getSuperClasses(instanceClass);
     for (Class<?> superClass : superClasses) {
       Set<InstanceItem> items = instanceItemMap.computeIfAbsent(superClass,
           _superClass -> new HashSet<>());
@@ -128,8 +130,8 @@ public class MaoInjector {
     }
   }
 
-  private Set<Class<?>> getSuperClasses(Class<?> instanceClass) {
-    Set<Class<?>> superClasses = new HashSet<>();
+  private List<Class<?>> getSuperClasses(Class<?> instanceClass) {
+    List<Class<?>> superClasses = new ArrayList<>();
     superClasses.add(instanceClass);
 
     Stack<Class<?>> stack = new Stack<>();
@@ -174,16 +176,15 @@ public class MaoInjector {
   }
 
   public MaoInjector merge(MaoInjector injector) {
+    instanceClasses.addAll(injector.getInstanceClasses());
     injector.getInstanceItemMap()
         .forEach((instanceClass, instanceItems) -> instanceItems
             .forEach(instanceItem -> {
               InstanceAnnotation instanceAnnotation =
                   instanceItem.getRealClass().getAnnotation(InstanceAnnotation.class);
               putInstance(instanceItem.getRealClass(), instanceItem.getInstance(),
-                  instanceAnnotation.name()
-              );
+                  instanceAnnotation.name());
             }));
-    instanceClasses.addAll(injector.getInstanceClasses());
     return this;
   }
 

@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CircularDependencyHelper extends AbsInjectHelper {
 
-  private Set<Class<?>> instanceClasses;
+  private List<Class<?>> instanceClasses;
   private Map<Class<?>, Set<Class<?>>> dependencies;
 
   public CircularDependencyHelper(MaoInjector injector) {

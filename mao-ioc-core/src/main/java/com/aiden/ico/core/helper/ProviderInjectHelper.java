@@ -5,12 +5,10 @@ import com.aiden.ico.core.annotation.NameAnnotation;
 import com.aiden.ico.core.annotation.ProviderAnnotation;
 import com.aiden.ico.core.exception.ProviderInvokeException;
 import com.aiden.ico.core.injector.MaoInjector;
-import com.google.common.collect.Sets;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProviderInjectHelper extends AbsInjectHelper {
 
-  private Set<Class<?>> instanceClasses;
+  private List<Class<?>> instanceClasses;
 
   public ProviderInjectHelper(MaoInjector injector) {
     super(injector);
@@ -64,8 +62,7 @@ public class ProviderInjectHelper extends AbsInjectHelper {
 
   private List<Method> getProviderMethods(Class<?> instanceClass) {
     Method[] providerMethods = instanceClass.getDeclaredMethods();
-    return Sets.newHashSet(providerMethods)
-        .stream()
+    return Arrays.stream(providerMethods)
         .filter(method -> method.getAnnotation(ProviderAnnotation.class) != null)
         .collect(Collectors.toList());
   }
